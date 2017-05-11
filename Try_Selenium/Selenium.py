@@ -13,8 +13,8 @@ def explore(inputPath="http://www.ni.com/hu-hu.html", outputPath="map.txt", dept
     lista2= []
     for ref in lista:
         r = ref.get_attribute('href')
-        if (not(r is None or "javascript:void" in r or len(r) == 0)):
-            lista2.append(ref.get_attribute('href'))
+        if (not(r is None or "javascript:void" in r or len(r) == 0) and r not in lista2):
+            lista2.append(r)
     map[inputPath] = lista2
 
 
@@ -26,7 +26,6 @@ def explore(inputPath="http://www.ni.com/hu-hu.html", outputPath="map.txt", dept
             driver.get(ref)
             newUrl = driver.current_url
             if(newUrl in map.keys()):
-                #print(newUrl+"  it has been already explored")
                 continue
             print(map.keys())
             tmpSubList = driver.find_elements_by_tag_name('a')
@@ -38,16 +37,17 @@ def explore(inputPath="http://www.ni.com/hu-hu.html", outputPath="map.txt", dept
                     continue
 
                 if ( not(sr is None or "javascript:void" in sr or len(sr) == 0)):
-                    tmpList.append(sr)
-                    tmpList2.append(sr)
-                    #print(sr+"\n")
+                    if(sr not in tmpList ):
+                        tmpList.append(sr)
+                    if(sr not in tmpList2):
+                        tmpList2.append(sr)
             map[ref] = tmpList2
         lista2 = tmpList
 
 
     for key in map.keys():
-        myFile.write(map.keys().__str__()+"\n")
-        myFile.write("-------------------\n")
+        myFile.write("Parent"+key+"\n")
+        myFile.write("---------- Children ---------\n")
         for p in map[key]:
             myFile.write(p+"\n")
         myFile.write("-------------------\n")
